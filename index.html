@@ -6,29 +6,34 @@
   <title>Arena Assistant</title>
 
   <style>
+    * { box-sizing: border-box; }
+
     body {
       margin: 0;
-      background: radial-gradient(circle at center, #062a2d 0%, #000 70%);
+      height: 100vh;
       overflow: hidden;
       font-family: Arial, sans-serif;
       color: white;
+      background:
+        radial-gradient(circle at 50% 35%, rgba(0,255,194,.18), transparent 32%),
+        linear-gradient(135deg, #020607 0%, #001819 45%, #000 100%);
     }
 
-    video {
+    .grid {
       position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      height: 78vh;
-      width: auto;
-      object-fit: contain;
-      filter: drop-shadow(0 0 40px rgba(0,255,194,.25));
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(0,255,194,.06) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,255,194,.06) 1px, transparent 1px);
+      background-size: 60px 60px;
+      mask-image: radial-gradient(circle, black 25%, transparent 75%);
+      opacity: .45;
     }
 
     .brand {
       position: fixed;
-      top: 28px;
-      left: 34px;
+      top: 32px;
+      left: 38px;
       z-index: 10;
     }
 
@@ -36,26 +41,42 @@
       margin: 0;
       font-size: 58px;
       color: #00ffc2;
-      text-shadow: 0 0 25px rgba(0,255,194,.55);
+      text-shadow: 0 0 26px rgba(0,255,194,.6);
     }
 
     .brand p {
-      margin: 6px 0 0;
+      margin: 8px 0 0;
       font-size: 20px;
       opacity: .75;
     }
 
+    video {
+      position: fixed;
+      top: 49%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      height: 76vh;
+      width: auto;
+      object-fit: contain;
+      filter:
+        drop-shadow(0 0 32px rgba(0,255,194,.22))
+        drop-shadow(0 0 90px rgba(0,255,194,.14));
+      z-index: 2;
+    }
+
     .panel {
       position: fixed;
-      bottom: 34px;
       left: 50%;
+      bottom: 34px;
       transform: translateX(-50%);
-      width: min(900px, 90vw);
-      padding: 24px;
-      border-radius: 28px;
-      background: rgba(0,0,0,.68);
-      border: 1px solid rgba(0,255,194,.35);
-      box-shadow: 0 0 60px rgba(0,255,194,.18);
+      width: min(940px, 92vw);
+      padding: 24px 28px;
+      border-radius: 30px;
+      background: rgba(0, 0, 0, .68);
+      border: 1px solid rgba(0,255,194,.38);
+      box-shadow:
+        0 0 40px rgba(0,255,194,.18),
+        inset 0 0 30px rgba(0,255,194,.05);
       backdrop-filter: blur(18px);
       z-index: 20;
       text-align: center;
@@ -63,33 +84,50 @@
 
     #status {
       color: #00ffc2;
-      font-weight: bold;
+      font-weight: 800;
       margin-bottom: 10px;
+      letter-spacing: .5px;
     }
 
     #text {
+      min-height: 62px;
       font-size: 21px;
       line-height: 1.45;
-      min-height: 62px;
+    }
+
+    .buttons {
+      display: flex;
+      gap: 14px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-top: 18px;
     }
 
     button {
-      margin-top: 18px;
       border: none;
       border-radius: 999px;
-      padding: 18px 32px;
-      font-size: 18px;
-      font-weight: bold;
+      padding: 16px 26px;
+      font-size: 17px;
+      font-weight: 800;
       cursor: pointer;
+    }
+
+    .main {
       background: #00ffc2;
-      color: #000;
+      color: #00110d;
       box-shadow: 0 0 30px rgba(0,255,194,.45);
     }
 
-    button.stop {
+    .main.stop {
       background: #ff3b5c;
       color: white;
       box-shadow: 0 0 30px rgba(255,59,92,.45);
+    }
+
+    .secondary {
+      background: rgba(255,255,255,.12);
+      color: white;
+      border: 1px solid rgba(255,255,255,.22);
     }
 
     .pulse {
@@ -97,13 +135,14 @@
     }
 
     @keyframes pulse {
-      from { box-shadow: 0 0 18px rgba(0,255,194,.35); }
+      from { box-shadow: 0 0 16px rgba(0,255,194,.35); }
       to { box-shadow: 0 0 55px rgba(0,255,194,.95); }
     }
   </style>
 </head>
 
 <body>
+  <div class="grid"></div>
 
   <div class="brand">
     <h1>Arena Assistant</h1>
@@ -111,18 +150,23 @@
   </div>
 
   <video autoplay muted loop playsinline>
-    <source src="./Arena%20Avatar%2024MB.mp4" type="video/mp4">
+    <source src="https://robecardenasmty.github.io/arena-assistant-avatar/Arena%20Avatar%2024MB.mp4" type="video/mp4">
   </video>
 
   <div class="panel">
     <div id="status">Lista para ayudarte</div>
     <div id="text">Presiona una sola vez para iniciar la conversación.</div>
-    <button id="btn" onclick="toggleConversation()">🎙️ Iniciar conversación</button>
+
+    <div class="buttons">
+      <button id="btn" class="main" onclick="toggleConversation()">🎙️ Iniciar conversación</button>
+      <button class="secondary" onclick="demo('¿Dónde están los baños?')">Baños</button>
+      <button class="secondary" onclick="demo('¿Dónde compro cerveza?')">Cerveza</button>
+      <button class="secondary" onclick="demo('Estoy en cancha')">Cancha</button>
+    </div>
   </div>
 
   <script>
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-
     const statusEl = document.getElementById("status");
     const textEl = document.getElementById("text");
     const btn = document.getElementById("btn");
@@ -131,9 +175,7 @@
     let active = false;
     let speaking = false;
 
-    if (!SpeechRecognition) {
-      statusEl.textContent = "Usa Google Chrome para activar voz.";
-    } else {
+    if (SpeechRecognition) {
       recognition = new SpeechRecognition();
       recognition.lang = "es-MX";
       recognition.continuous = false;
@@ -151,16 +193,14 @@
 
       recognition.onend = () => {
         btn.classList.remove("pulse");
-        if (active && !speaking) {
-          setTimeout(listen, 500);
-        }
+        if (active && !speaking) setTimeout(listen, 600);
       };
 
       recognition.onerror = () => {
-        if (active && !speaking) {
-          setTimeout(listen, 900);
-        }
+        if (active && !speaking) setTimeout(listen, 900);
       };
+    } else {
+      statusEl.textContent = "Usa Chrome para activar voz.";
     }
 
     function toggleConversation() {
@@ -190,6 +230,10 @@
       statusEl.textContent = "Conversación finalizada";
     }
 
+    function demo(q) {
+      processQuestion(q);
+    }
+
     function processQuestion(question) {
       speaking = true;
       statusEl.textContent = "Procesando...";
@@ -207,7 +251,7 @@
       const q = input.toLowerCase();
 
       if (q.includes("gracias") || q.includes("listo") || q.includes("eso es todo")) {
-        setTimeout(stopConversation, 1500);
+        setTimeout(stopConversation, 1200);
         return "Con gusto. Que disfrutes el evento en Arena Monterrey.";
       }
 
@@ -216,7 +260,7 @@
       }
 
       if (q.includes("cerveza") || q.includes("bebida")) {
-        return "Puedes comprar cerveza en las zonas de alimentos y bebidas de los pasillos exteriores. Si estás en cancha, sal por un acceso lateral hacia el nivel principal.";
+        return "Puedes comprar cerveza en las zonas de alimentos y bebidas de los pasillos exteriores. Si estás en cancha, sal por una salida lateral hacia el nivel principal.";
       }
 
       if (q.includes("comida") || q.includes("alimentos")) {
@@ -254,13 +298,12 @@
         speaking = false;
         if (active) {
           statusEl.textContent = "Te sigo escuchando...";
-          setTimeout(listen, 650);
+          setTimeout(listen, 700);
         }
       };
 
       window.speechSynthesis.speak(utterance);
     }
   </script>
-
 </body>
 </html>
