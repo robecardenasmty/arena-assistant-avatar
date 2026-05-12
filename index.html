@@ -7,10 +7,11 @@
   <title>Arena Assistant</title>
 
   <style>
+
     body {
       margin: 0;
-      background: radial-gradient(circle at center, #02131a 0%, #000000 70%);
       overflow: hidden;
+      background: radial-gradient(circle at center, #02141d 0%, #000000 75%);
       font-family: Arial, sans-serif;
       color: white;
     }
@@ -18,24 +19,34 @@
     h1 {
       position: absolute;
       top: 25px;
-      left: 25px;
+      left: 30px;
       margin: 0;
-      font-size: 64px;
       color: #00FFC2;
-      z-index: 10;
-      text-shadow: 0 0 20px rgba(0,255,194,0.5);
+      font-size: 58px;
+      z-index: 20;
+
+      text-shadow:
+        0 0 12px rgba(0,255,194,0.6),
+        0 0 30px rgba(0,255,194,0.2);
     }
 
     .subtitle {
       position: absolute;
-      top: 105px;
-      left: 28px;
+      top: 95px;
+      left: 32px;
+      font-size: 20px;
       color: rgba(255,255,255,0.7);
-      font-size: 22px;
-      z-index: 10;
+      z-index: 20;
     }
 
-    .avatar-container {
+    .avatar-wrapper {
+      position: fixed;
+
+      top: 60%;
+      left: 50%;
+
+      transform: translate(-50%, -50%);
+
       width: 100vw;
       height: 100vh;
 
@@ -44,26 +55,34 @@
       align-items: center;
     }
 
-    img {
-      max-height: 88vh;
-      max-width: 42vw;
+    video {
 
+      height: 74vh;
       width: auto;
-      height: auto;
 
       object-fit: contain;
 
       filter:
-        drop-shadow(0 0 25px rgba(0,255,194,0.15))
-        drop-shadow(0 0 45px rgba(0,255,194,0.10));
+        drop-shadow(0 0 30px rgba(0,255,194,0.12))
+        drop-shadow(0 0 60px rgba(0,255,194,0.10));
+
+      border-radius: 12px;
     }
 
-    .glow {
+    .ambient-glow {
+
       position: absolute;
-      width: 600px;
-      height: 600px;
-      background: radial-gradient(circle, rgba(0,255,194,0.12) 0%, transparent 70%);
-      filter: blur(50px);
+
+      width: 700px;
+      height: 700px;
+
+      background:
+        radial-gradient(circle,
+        rgba(0,255,194,0.10) 0%,
+        transparent 70%);
+
+      filter: blur(60px);
+
       z-index: -1;
     }
 
@@ -78,12 +97,19 @@
     Concierge digital · Arena Monterrey
   </div>
 
-  <div class="avatar-container">
+  <div class="avatar-wrapper">
 
-    <div class="glow"></div>
+    <div class="ambient-glow"></div>
 
-    <!-- CAMBIA EL NOMBRE SI TU IMAGEN SE LLAMA DIFERENTE -->
-    <img src="avatar.png" alt="Arena Avatar">
+    <video autoplay muted loop playsinline>
+
+      <!-- IMPORTANTE:
+           ESTE NOMBRE DEBE SER EXACTAMENTE IGUAL
+           AL VIDEO EN GITHUB -->
+
+      <source src="Arena%20Avatar%2024MB.mp4" type="video/mp4">
+
+    </video>
 
   </div>
 
