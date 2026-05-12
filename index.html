@@ -1,23 +1,17 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Arena Assistant</title>
+
   <style>
     body {
       margin: 0;
-      background: black;
+      background: radial-gradient(circle at center, #062a2d 0%, #000 70%);
       overflow: hidden;
       font-family: Arial, sans-serif;
-    }
-
-    h1 {
-      position: absolute;
-      top: 20px;
-      left: 25px;
-      color: #00ffc2;
-      font-size: 56px;
-      z-index: 10;
+      color: white;
     }
 
     video {
@@ -25,19 +19,248 @@
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
-      height: 70vh;
+      height: 78vh;
       width: auto;
       object-fit: contain;
+      filter: drop-shadow(0 0 40px rgba(0,255,194,.25));
+    }
+
+    .brand {
+      position: fixed;
+      top: 28px;
+      left: 34px;
+      z-index: 10;
+    }
+
+    .brand h1 {
+      margin: 0;
+      font-size: 58px;
+      color: #00ffc2;
+      text-shadow: 0 0 25px rgba(0,255,194,.55);
+    }
+
+    .brand p {
+      margin: 6px 0 0;
+      font-size: 20px;
+      opacity: .75;
+    }
+
+    .panel {
+      position: fixed;
+      bottom: 34px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: min(900px, 90vw);
+      padding: 24px;
+      border-radius: 28px;
+      background: rgba(0,0,0,.68);
+      border: 1px solid rgba(0,255,194,.35);
+      box-shadow: 0 0 60px rgba(0,255,194,.18);
+      backdrop-filter: blur(18px);
+      z-index: 20;
+      text-align: center;
+    }
+
+    #status {
+      color: #00ffc2;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+
+    #text {
+      font-size: 21px;
+      line-height: 1.45;
+      min-height: 62px;
+    }
+
+    button {
+      margin-top: 18px;
+      border: none;
+      border-radius: 999px;
+      padding: 18px 32px;
+      font-size: 18px;
+      font-weight: bold;
+      cursor: pointer;
+      background: #00ffc2;
+      color: #000;
+      box-shadow: 0 0 30px rgba(0,255,194,.45);
+    }
+
+    button.stop {
+      background: #ff3b5c;
+      color: white;
+      box-shadow: 0 0 30px rgba(255,59,92,.45);
+    }
+
+    .pulse {
+      animation: pulse 1s infinite alternate;
+    }
+
+    @keyframes pulse {
+      from { box-shadow: 0 0 18px rgba(0,255,194,.35); }
+      to { box-shadow: 0 0 55px rgba(0,255,194,.95); }
     }
   </style>
 </head>
+
 <body>
 
-<h1>Arena Assistant</h1>
+  <div class="brand">
+    <h1>Arena Assistant</h1>
+    <p>Concierge digital · Arena Monterrey</p>
+  </div>
 
-<video autoplay muted loop playsinline controls>
-  <source src="./Arena%20Avatar%2024MB.mp4" type="video/mp4">
-</video>
+  <video autoplay muted loop playsinline>
+    <source src="./Arena%20Avatar%2024MB.mp4" type="video/mp4">
+  </video>
+
+  <div class="panel">
+    <div id="status">Lista para ayudarte</div>
+    <div id="text">Presiona una sola vez para iniciar la conversación.</div>
+    <button id="btn" onclick="toggleConversation()">🎙️ Iniciar conversación</button>
+  </div>
+
+  <script>
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+    const statusEl = document.getElementById("status");
+    const textEl = document.getElementById("text");
+    const btn = document.getElementById("btn");
+
+    let recognition;
+    let active = false;
+    let speaking = false;
+
+    if (!SpeechRecognition) {
+      statusEl.textContent = "Usa Google Chrome para activar voz.";
+    } else {
+      recognition = new SpeechRecognition();
+      recognition.lang = "es-MX";
+      recognition.continuous = false;
+      recognition.interimResults = false;
+
+      recognition.onstart = () => {
+        statusEl.textContent = "Escuchando...";
+        btn.classList.add("pulse");
+      };
+
+      recognition.onresult = (event) => {
+        const question = event.results[0][0].transcript;
+        processQuestion(question);
+      };
+
+      recognition.onend = () => {
+        btn.classList.remove("pulse");
+        if (active && !speaking) {
+          setTimeout(listen, 500);
+        }
+      };
+
+      recognition.onerror = () => {
+        if (active && !speaking) {
+          setTimeout(listen, 900);
+        }
+      };
+    }
+
+    function toggleConversation() {
+      if (!active) {
+        active = true;
+        btn.textContent = "⏹️ Terminar conversación";
+        btn.classList.add("stop");
+        textEl.textContent = "Te escucho. ¿Qué necesitas encontrar?";
+        listen();
+      } else {
+        stopConversation();
+      }
+    }
+
+    function listen() {
+      if (!active || speaking || !recognition) return;
+      try { recognition.start(); } catch(e) {}
+    }
+
+    function stopConversation() {
+      active = false;
+      speaking = false;
+      window.speechSynthesis.cancel();
+      try { recognition.stop(); } catch(e) {}
+      btn.textContent = "🎙️ Iniciar conversación";
+      btn.classList.remove("stop", "pulse");
+      statusEl.textContent = "Conversación finalizada";
+    }
+
+    function processQuestion(question) {
+      speaking = true;
+      statusEl.textContent = "Procesando...";
+      textEl.textContent = "Usuario: " + question;
+
+      setTimeout(() => {
+        const answer = getAnswer(question);
+        statusEl.textContent = "Respondiendo...";
+        textEl.textContent = answer;
+        speak(answer);
+      }, 500);
+    }
+
+    function getAnswer(input) {
+      const q = input.toLowerCase();
+
+      if (q.includes("gracias") || q.includes("listo") || q.includes("eso es todo")) {
+        setTimeout(stopConversation, 1500);
+        return "Con gusto. Que disfrutes el evento en Arena Monterrey.";
+      }
+
+      if (q.includes("baño")) {
+        return "Los baños están en los pasillos laterales de cada nivel. Si estás en cancha o luneta, sal hacia el perímetro del nivel principal y busca la señalización.";
+      }
+
+      if (q.includes("cerveza") || q.includes("bebida")) {
+        return "Puedes comprar cerveza en las zonas de alimentos y bebidas de los pasillos exteriores. Si estás en cancha, sal por un acceso lateral hacia el nivel principal.";
+      }
+
+      if (q.includes("comida") || q.includes("alimentos")) {
+        return "Las opciones de alimentos están en el Food Court y pasillos exteriores del nivel principal. Busca señalización o pregunta al staff por el punto más cercano.";
+      }
+
+      if (q.includes("cancha")) {
+        return "Cancha está en el nivel inferior, frente al escenario. Para baños, comida o bebidas, busca una salida lateral hacia el perímetro del nivel principal.";
+      }
+
+      if (q.includes("luneta")) {
+        return "Luneta está en el nivel medio inferior, rodeando cancha. Revisa tu sección y valida el acceso exacto con staff.";
+      }
+
+      if (q.includes("balcón") || q.includes("balcon")) {
+        return "Balcón está en el nivel superior. Sigue la señalización hacia escaleras o accesos del nivel alto.";
+      }
+
+      if (q.includes("uber") || q.includes("taxi") || q.includes("salida")) {
+        return "Para Uber o taxi, dirígete hacia la salida exterior señalizada y confirma el punto exacto con el staff.";
+      }
+
+      return "Puedo ayudarte con baños, comida, bebidas, cancha, luneta, balcón, preferente, mercancía oficial, taquilla y salida hacia Uber o taxi. ¿Dónde estás ubicado?";
+    }
+
+    function speak(text) {
+      window.speechSynthesis.cancel();
+
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = "es-MX";
+      utterance.rate = 0.95;
+      utterance.pitch = 1.05;
+
+      utterance.onend = () => {
+        speaking = false;
+        if (active) {
+          statusEl.textContent = "Te sigo escuchando...";
+          setTimeout(listen, 650);
+        }
+      };
+
+      window.speechSynthesis.speak(utterance);
+    }
+  </script>
 
 </body>
 </html>
