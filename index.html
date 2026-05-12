@@ -1,45 +1,92 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
   <meta charset="UTF-8">
-  <title>Arena Assistant Avatar</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Arena Assistant</title>
 
   <style>
     body {
       margin: 0;
-      background: black;
+      background: radial-gradient(circle at center, #02131a 0%, #000000 70%);
       overflow: hidden;
       font-family: Arial, sans-serif;
-    }
-
-    video {
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      width: auto;
-      height: 100vh;
-      transform: translate(-50%, -50%);
-      object-fit: contain;
+      color: white;
     }
 
     h1 {
       position: absolute;
-      top: 20px;
-      left: 20px;
+      top: 25px;
+      left: 25px;
+      margin: 0;
+      font-size: 64px;
       color: #00FFC2;
       z-index: 10;
-      font-size: 48px;
+      text-shadow: 0 0 20px rgba(0,255,194,0.5);
     }
+
+    .subtitle {
+      position: absolute;
+      top: 105px;
+      left: 28px;
+      color: rgba(255,255,255,0.7);
+      font-size: 22px;
+      z-index: 10;
+    }
+
+    .avatar-container {
+      width: 100vw;
+      height: 100vh;
+
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    img {
+      max-height: 88vh;
+      max-width: 42vw;
+
+      width: auto;
+      height: auto;
+
+      object-fit: contain;
+
+      filter:
+        drop-shadow(0 0 25px rgba(0,255,194,0.15))
+        drop-shadow(0 0 45px rgba(0,255,194,0.10));
+    }
+
+    .glow {
+      position: absolute;
+      width: 600px;
+      height: 600px;
+      background: radial-gradient(circle, rgba(0,255,194,0.12) 0%, transparent 70%);
+      filter: blur(50px);
+      z-index: -1;
+    }
+
   </style>
 </head>
 
 <body>
 
-<h1>Arena Assistant</h1>
+  <h1>Arena Assistant</h1>
 
-<video autoplay muted loop playsinline>
-  <source src="Arena%20Avatar%2024MB.mp4" type="video/mp4">
-</video>
+  <div class="subtitle">
+    Concierge digital · Arena Monterrey
+  </div>
+
+  <div class="avatar-container">
+
+    <div class="glow"></div>
+
+    <!-- CAMBIA EL NOMBRE SI TU IMAGEN SE LLAMA DIFERENTE -->
+    <img src="avatar.png" alt="Arena Avatar">
+
+  </div>
 
 </body>
+
 </html>
