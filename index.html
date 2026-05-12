@@ -1,13 +1,9 @@
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Arena Assistant</title>
-
   <style>
-
     body {
       margin: 0;
       background: black;
@@ -18,48 +14,30 @@
     h1 {
       position: absolute;
       top: 20px;
-      left: 20px;
-      color: #00FFC2;
+      left: 25px;
+      color: #00ffc2;
+      font-size: 56px;
       z-index: 10;
-      font-size: 52px;
-    }
-
-    .container {
-      width: 100vw;
-      height: 100vh;
-
-      display: flex;
-      justify-content: center;
-      align-items: center;
     }
 
     video {
-
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      height: 70vh;
       width: auto;
-      height: 65vh;
-
       object-fit: contain;
-
-      border-radius: 12px;
     }
-
   </style>
 </head>
-
 <body>
 
-  <h1>Arena Assistant</h1>
+<h1>Arena Assistant</h1>
 
-  <div class="container">
-
-    <video autoplay muted loop playsinline>
-
-      <source src="Arena%20Avatar%2024MB.mp4" type="video/mp4">
-
-    </video>
-
-  </div>
+<video autoplay muted loop playsinline controls>
+  <source src="./Arena%20Avatar%2024MB.mp4" type="video/mp4">
+</video>
 
 </body>
-
 </html>
