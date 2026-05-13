@@ -84,10 +84,21 @@
       color: #00110d;
     }
 
+    .recording {
+      background: #ff3b5c;
+      color: white;
+      animation: pulse 1s infinite alternate;
+    }
+
     .secondary {
       background: #222;
       color: white;
       border: 1px solid #555;
+    }
+
+    @keyframes pulse {
+      from { box-shadow: 0 0 12px rgba(255,59,92,.35); }
+      to { box-shadow: 0 0 45px rgba(255,59,92,.95); }
     }
   </style>
 </head>
@@ -105,9 +116,9 @@
 
 <div class="panel">
   <div id="status">Lista para ayudarte</div>
-  <div id="text">Hola, soy Arena Assistant. ¿En qué puedo ayudarte?</div>
+  <div id="text">Toca “Grabar pregunta”, habla y vuelve a tocar para enviar.</div>
 
-  <button class="main" onclick="askCustom()">🎙️ Escribir pregunta</button>
+  <button id="recordBtn" class="main" onclick="toggleRecording()">🎙️ Grabar pregunta</button>
   <button class="secondary" onclick="askAI('Hola')">Hola</button>
   <button class="secondary" onclick="askAI('¿Dónde están los baños?')">Baños</button>
   <button class="secondary" onclick="askAI('¿Dónde compro cerveza?')">Cerveza</button>
@@ -115,17 +126,84 @@
 </div>
 
 <script>
-async function askCustom() {
-  const q = prompt("¿Qué quieres preguntarle a Arena Assistant?");
-  if (q) askAI(q);
+const statusEl = document.getElementById("status");
+const textEl = document.getElementById("text");
+const recordBtn = document.getElementById("recordBtn");
+
+let mediaRecorder;
+let audioChunks = [];
+let isRecording = false;
+
+function blobToBase64(blob) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onloadend = () => resolve(reader.result.split(",")[1]);
+    reader.onerror = reject;
+    reader.readAsDataURL(blob);
+  });
 }
 
-async function askAI(message) {
-  const status = document.getElementById("status");
-  const text = document.getElementById("text");
+async function toggleRecording() {
+  if (!isRecording) {
+    await startRecording();
+  } else {
+    await stopRecording();
+  }
+}
 
-  status.textContent = "Pensando...";
-  text.textContent = "Usuario: " + message;
+async function startRecording() {
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+
+    audioChunks = [];
+
+    mediaRecorder = new MediaRecorder(stream);
+
+    mediaRecorder.ondataavailable = event => {
+      if (event.data.size > 0) {
+        audioChunks.push(event.data);
+      }
+    };
+
+    mediaRecorder.onstop = async () => {
+      stream.getTracks().forEach(track => track.stop());
+
+      const audioBlob = new Blob(audioChunks, { type: "audio/webm" });
+      const audioBase64 = await blobToBase64(audioBlob);
+
+      await askAI(null, audioBase64);
+    };
+
+    mediaRecorder.start();
+    isRecording = true;
+
+    recordBtn.textContent = "⏹️ Enviar pregunta";
+    recordBtn.classList.add("recording");
+
+    statusEl.textContent = "Escuchando...";
+    textEl.textContent = "Habla ahora. Cuando termines, toca “Enviar pregunta”.";
+  } catch (error) {
+    statusEl.textContent = "No pude abrir el micrófono";
+    textEl.textContent = "Revisa permisos del navegador o abre la página directamente en Safari/Chrome.";
+  }
+}
+
+async function stopRecording() {
+  if (!mediaRecorder || mediaRecorder.state !== "recording") return;
+
+  isRecording = false;
+  recordBtn.textContent = "🎙️ Grabar pregunta";
+  recordBtn.classList.remove("recording");
+
+  statusEl.textContent = "Procesando...";
+  textEl.textContent = "Estoy procesando tu pregunta.";
+
+  mediaRecorder.stop();
+}
+
+async function askAI(message, audioBase64 = null) {
+  statusEl.textContent = "Pensando...";
+  if (message) textEl.textContent = "Usuario: " + message;
 
   try {
     const res = await fetch("/.netlify/functions/ask", {
@@ -133,24 +211,26 @@ async function askAI(message) {
       headers: {
         "Content-Type": "application/json"
       },
-      body: JSON.stringify({ message })
+      body: JSON.stringify({
+        message,
+        audioBase64
+      })
     });
 
     const data = await res.json();
 
     const reply = data.reply || "No pude procesar la respuesta.";
 
-    status.textContent = "Respondiendo...";
-    text.textContent = reply;
+    statusEl.textContent = "Respondiendo...";
+    textEl.textContent = reply;
 
     if (data.audioBase64) {
       const audio = new Audio("data:audio/mp3;base64," + data.audioBase64);
       await audio.play();
     }
-
   } catch (error) {
-    status.textContent = "Error";
-    text.textContent = "No pude conectar con OpenAI. Revisa Netlify Functions y la API key.";
+    statusEl.textContent = "Error";
+    textEl.textContent = "No pude conectar con OpenAI. Revisa Netlify Functions y la API key.";
   }
 }
 </script>
