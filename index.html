@@ -4,20 +4,94 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Arena Assistant</title>
+
   <style>
-    body{margin:0;background:#000;color:white;font-family:Arial;overflow:hidden}
-    video{position:fixed;top:45%;left:50%;transform:translate(-50%,-50%);height:70vh;max-width:95vw;object-fit:contain}
-    .brand{position:fixed;top:25px;left:30px;z-index:10}
-    h1{margin:0;color:#00ffc2;font-size:54px;text-shadow:0 0 25px #00ffc2}
-    p{margin:6px 0;color:#ddd}
-    .panel{position:fixed;left:50%;bottom:30px;transform:translateX(-50%);width:min(900px,92vw);background:rgba(0,0,0,.75);border:1px solid #00ffc2;border-radius:28px;padding:24px;text-align:center}
-    #status{color:#00ffc2;font-weight:bold;margin-bottom:10px}
-    #text{font-size:21px;line-height:1.4;min-height:70px}
-    button{margin:8px;padding:15px 24px;border-radius:999px;border:0;font-weight:bold;font-size:16px;cursor:pointer}
-    .main{background:#00ffc2;color:#00110d}
-    .secondary{background:#222;color:white;border:1px solid #555}
+    body {
+      margin: 0;
+      background: #000;
+      color: white;
+      font-family: Arial, sans-serif;
+      overflow: hidden;
+    }
+
+    video {
+      position: fixed;
+      top: 45%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      height: 70vh;
+      max-width: 95vw;
+      object-fit: contain;
+    }
+
+    .brand {
+      position: fixed;
+      top: 25px;
+      left: 30px;
+      z-index: 10;
+    }
+
+    h1 {
+      margin: 0;
+      color: #00ffc2;
+      font-size: 54px;
+      text-shadow: 0 0 25px #00ffc2;
+    }
+
+    p {
+      margin: 6px 0;
+      color: #ddd;
+    }
+
+    .panel {
+      position: fixed;
+      left: 50%;
+      bottom: 30px;
+      transform: translateX(-50%);
+      width: min(900px, 92vw);
+      background: rgba(0, 0, 0, 0.75);
+      border: 1px solid #00ffc2;
+      border-radius: 28px;
+      padding: 24px;
+      text-align: center;
+      box-shadow: 0 0 35px rgba(0,255,194,0.25);
+    }
+
+    #status {
+      color: #00ffc2;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+
+    #text {
+      font-size: 21px;
+      line-height: 1.4;
+      min-height: 70px;
+    }
+
+    button {
+      margin: 8px;
+      padding: 15px 24px;
+      border-radius: 999px;
+      border: 0;
+      font-weight: bold;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    .main {
+      background: #00ffc2;
+      color: #00110d;
+    }
+
+    .secondary {
+      background: #222;
+      color: white;
+      border: 1px solid #555;
+    }
   </style>
 </head>
+
 <body>
 
 <div class="brand">
@@ -36,16 +110,17 @@
   <button class="main" onclick="askCustom()">🎙️ Escribir pregunta</button>
   <button class="secondary" onclick="askAI('Hola')">Hola</button>
   <button class="secondary" onclick="askAI('¿Dónde están los baños?')">Baños</button>
+  <button class="secondary" onclick="askAI('¿Dónde compro cerveza?')">Cerveza</button>
   <button class="secondary" onclick="askAI('Estoy en cancha')">Cancha</button>
 </div>
 
 <script>
-async function askCustom(){
+async function askCustom() {
   const q = prompt("¿Qué quieres preguntarle a Arena Assistant?");
-  if(q) askAI(q);
+  if (q) askAI(q);
 }
 
-async function askAI(message){
+async function askAI(message) {
   const status = document.getElementById("status");
   const text = document.getElementById("text");
 
@@ -55,25 +130,27 @@ async function askAI(message){
   try {
     const res = await fetch("/.netlify/functions/ask", {
       method: "POST",
-      headers: {"Content-Type":"application/json"},
+      headers: {
+        "Content-Type": "application/json"
+      },
       body: JSON.stringify({ message })
     });
 
     const data = await res.json();
+
     const reply = data.reply || "No pude procesar la respuesta.";
 
     status.textContent = "Respondiendo...";
     text.textContent = reply;
 
-    const voice = new SpeechSynthesisUtterance(reply);
-    voice.lang = "es-MX";
-    voice.rate = 0.95;
-    speechSynthesis.cancel();
-    speechSynthesis.speak(voice);
+    if (data.audioBase64) {
+      const audio = new Audio("data:audio/mp3;base64," + data.audioBase64);
+      await audio.play();
+    }
 
-  } catch(e) {
+  } catch (error) {
     status.textContent = "Error";
-    text.textContent = "No pude conectar con OpenAI. Revisa la función ask.js o la API key en Netlify.";
+    text.textContent = "No pude conectar con OpenAI. Revisa Netlify Functions y la API key.";
   }
 }
 </script>
