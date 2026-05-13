@@ -4,306 +4,79 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Arena Assistant</title>
-
   <style>
-    * { box-sizing: border-box; }
-
-    body {
-      margin: 0;
-      height: 100vh;
-      overflow: hidden;
-      font-family: Arial, sans-serif;
-      color: white;
-      background:
-        radial-gradient(circle at 50% 35%, rgba(0,255,194,.18), transparent 32%),
-        linear-gradient(135deg, #020607 0%, #001819 45%, #000 100%);
-    }
-
-    .grid {
-      position: fixed;
-      inset: 0;
-      background-image:
-        linear-gradient(rgba(0,255,194,.06) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(0,255,194,.06) 1px, transparent 1px);
-      background-size: 60px 60px;
-      mask-image: radial-gradient(circle, black 25%, transparent 75%);
-      opacity: .45;
-    }
-
-    .brand {
-      position: fixed;
-      top: 32px;
-      left: 38px;
-      z-index: 10;
-    }
-
-    .brand h1 {
-      margin: 0;
-      font-size: 58px;
-      color: #00ffc2;
-      text-shadow: 0 0 26px rgba(0,255,194,.6);
-    }
-
-    .brand p {
-      margin: 8px 0 0;
-      font-size: 20px;
-      opacity: .75;
-    }
-
-    video {
-      position: fixed;
-      top: 49%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      height: 76vh;
-      width: auto;
-      object-fit: contain;
-      filter:
-        drop-shadow(0 0 32px rgba(0,255,194,.22))
-        drop-shadow(0 0 90px rgba(0,255,194,.14));
-      z-index: 2;
-    }
-
-    .panel {
-      position: fixed;
-      left: 50%;
-      bottom: 34px;
-      transform: translateX(-50%);
-      width: min(940px, 92vw);
-      padding: 24px 28px;
-      border-radius: 30px;
-      background: rgba(0, 0, 0, .68);
-      border: 1px solid rgba(0,255,194,.38);
-      box-shadow:
-        0 0 40px rgba(0,255,194,.18),
-        inset 0 0 30px rgba(0,255,194,.05);
-      backdrop-filter: blur(18px);
-      z-index: 20;
-      text-align: center;
-    }
-
-    #status {
-      color: #00ffc2;
-      font-weight: 800;
-      margin-bottom: 10px;
-      letter-spacing: .5px;
-    }
-
-    #text {
-      min-height: 62px;
-      font-size: 21px;
-      line-height: 1.45;
-    }
-
-    .buttons {
-      display: flex;
-      gap: 14px;
-      justify-content: center;
-      flex-wrap: wrap;
-      margin-top: 18px;
-    }
-
-    button {
-      border: none;
-      border-radius: 999px;
-      padding: 16px 26px;
-      font-size: 17px;
-      font-weight: 800;
-      cursor: pointer;
-    }
-
-    .main {
-      background: #00ffc2;
-      color: #00110d;
-      box-shadow: 0 0 30px rgba(0,255,194,.45);
-    }
-
-    .main.stop {
-      background: #ff3b5c;
-      color: white;
-      box-shadow: 0 0 30px rgba(255,59,92,.45);
-    }
-
-    .secondary {
-      background: rgba(255,255,255,.12);
-      color: white;
-      border: 1px solid rgba(255,255,255,.22);
-    }
-
-    .pulse {
-      animation: pulse 1s infinite alternate;
-    }
-
-    @keyframes pulse {
-      from { box-shadow: 0 0 16px rgba(0,255,194,.35); }
-      to { box-shadow: 0 0 55px rgba(0,255,194,.95); }
-    }
+    body{margin:0;background:#000;color:white;font-family:Arial;overflow:hidden}
+    video{position:fixed;top:45%;left:50%;transform:translate(-50%,-50%);height:70vh;max-width:95vw;object-fit:contain}
+    .brand{position:fixed;top:25px;left:30px;z-index:10}
+    h1{margin:0;color:#00ffc2;font-size:54px;text-shadow:0 0 25px #00ffc2}
+    p{margin:6px 0;color:#ddd}
+    .panel{position:fixed;left:50%;bottom:30px;transform:translateX(-50%);width:min(900px,92vw);background:rgba(0,0,0,.75);border:1px solid #00ffc2;border-radius:28px;padding:24px;text-align:center}
+    #status{color:#00ffc2;font-weight:bold;margin-bottom:10px}
+    #text{font-size:21px;line-height:1.4;min-height:70px}
+    button{margin:8px;padding:15px 24px;border-radius:999px;border:0;font-weight:bold;font-size:16px;cursor:pointer}
+    .main{background:#00ffc2;color:#00110d}
+    .secondary{background:#222;color:white;border:1px solid #555}
   </style>
 </head>
-
 <body>
-  <div class="grid"></div>
 
-  <div class="brand">
-    <h1>Arena Assistant</h1>
-    <p>Concierge digital · Arena Monterrey</p>
-  </div>
+<div class="brand">
+  <h1>Arena Assistant</h1>
+  <p>Concierge digital · Arena Monterrey</p>
+</div>
 
-  <video autoplay muted loop playsinline>
-    <source src="https://robecardenasmty.github.io/arena-assistant-avatar/Arena%20Avatar%2024MB.mp4" type="video/mp4">
-  </video>
+<video autoplay muted loop playsinline>
+  <source src="https://robecardenasmty.github.io/arena-assistant-avatar/Arena%20Avatar%2024MB.mp4" type="video/mp4">
+</video>
 
-  <div class="panel">
-    <div id="status">Lista para ayudarte</div>
-    <div id="text">Presiona una sola vez para iniciar la conversación.</div>
+<div class="panel">
+  <div id="status">Lista para ayudarte</div>
+  <div id="text">Hola, soy Arena Assistant. ¿En qué puedo ayudarte?</div>
 
-    <div class="buttons">
-      <button id="btn" class="main" onclick="toggleConversation()">🎙️ Iniciar conversación</button>
-      <button class="secondary" onclick="demo('¿Dónde están los baños?')">Baños</button>
-      <button class="secondary" onclick="demo('¿Dónde compro cerveza?')">Cerveza</button>
-      <button class="secondary" onclick="demo('Estoy en cancha')">Cancha</button>
-    </div>
-  </div>
+  <button class="main" onclick="askCustom()">🎙️ Escribir pregunta</button>
+  <button class="secondary" onclick="askAI('Hola')">Hola</button>
+  <button class="secondary" onclick="askAI('¿Dónde están los baños?')">Baños</button>
+  <button class="secondary" onclick="askAI('Estoy en cancha')">Cancha</button>
+</div>
 
-  <script>
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    const statusEl = document.getElementById("status");
-    const textEl = document.getElementById("text");
-    const btn = document.getElementById("btn");
+<script>
+async function askCustom(){
+  const q = prompt("¿Qué quieres preguntarle a Arena Assistant?");
+  if(q) askAI(q);
+}
 
-    let recognition;
-    let active = false;
-    let speaking = false;
+async function askAI(message){
+  const status = document.getElementById("status");
+  const text = document.getElementById("text");
 
-    if (SpeechRecognition) {
-      recognition = new SpeechRecognition();
-      recognition.lang = "es-MX";
-      recognition.continuous = false;
-      recognition.interimResults = false;
+  status.textContent = "Pensando...";
+  text.textContent = "Usuario: " + message;
 
-      recognition.onstart = () => {
-        statusEl.textContent = "Escuchando...";
-        btn.classList.add("pulse");
-      };
+  try {
+    const res = await fetch("/.netlify/functions/ask", {
+      method: "POST",
+      headers: {"Content-Type":"application/json"},
+      body: JSON.stringify({ message })
+    });
 
-      recognition.onresult = (event) => {
-        const question = event.results[0][0].transcript;
-        processQuestion(question);
-      };
+    const data = await res.json();
+    const reply = data.reply || "No pude procesar la respuesta.";
 
-      recognition.onend = () => {
-        btn.classList.remove("pulse");
-        if (active && !speaking) setTimeout(listen, 600);
-      };
+    status.textContent = "Respondiendo...";
+    text.textContent = reply;
 
-      recognition.onerror = () => {
-        if (active && !speaking) setTimeout(listen, 900);
-      };
-    } else {
-      statusEl.textContent = "Usa Chrome para activar voz.";
-    }
+    const voice = new SpeechSynthesisUtterance(reply);
+    voice.lang = "es-MX";
+    voice.rate = 0.95;
+    speechSynthesis.cancel();
+    speechSynthesis.speak(voice);
 
-    function toggleConversation() {
-      if (!active) {
-        active = true;
-        btn.textContent = "⏹️ Terminar conversación";
-        btn.classList.add("stop");
-        textEl.textContent = "Te escucho. ¿Qué necesitas encontrar?";
-        listen();
-      } else {
-        stopConversation();
-      }
-    }
+  } catch(e) {
+    status.textContent = "Error";
+    text.textContent = "No pude conectar con OpenAI. Revisa la función ask.js o la API key en Netlify.";
+  }
+}
+</script>
 
-    function listen() {
-      if (!active || speaking || !recognition) return;
-      try { recognition.start(); } catch(e) {}
-    }
-
-    function stopConversation() {
-      active = false;
-      speaking = false;
-      window.speechSynthesis.cancel();
-      try { recognition.stop(); } catch(e) {}
-      btn.textContent = "🎙️ Iniciar conversación";
-      btn.classList.remove("stop", "pulse");
-      statusEl.textContent = "Conversación finalizada";
-    }
-
-    function demo(q) {
-      processQuestion(q);
-    }
-
-    function processQuestion(question) {
-      speaking = true;
-      statusEl.textContent = "Procesando...";
-      textEl.textContent = "Usuario: " + question;
-
-      setTimeout(() => {
-        const answer = getAnswer(question);
-        statusEl.textContent = "Respondiendo...";
-        textEl.textContent = answer;
-        speak(answer);
-      }, 500);
-    }
-
-    function getAnswer(input) {
-      const q = input.toLowerCase();
-
-      if (q.includes("gracias") || q.includes("listo") || q.includes("eso es todo")) {
-        setTimeout(stopConversation, 1200);
-        return "Con gusto. Que disfrutes el evento en Arena Monterrey.";
-      }
-
-      if (q.includes("baño")) {
-        return "Los baños están en los pasillos laterales de cada nivel. Si estás en cancha o luneta, sal hacia el perímetro del nivel principal y busca la señalización.";
-      }
-
-      if (q.includes("cerveza") || q.includes("bebida")) {
-        return "Puedes comprar cerveza en las zonas de alimentos y bebidas de los pasillos exteriores. Si estás en cancha, sal por una salida lateral hacia el nivel principal.";
-      }
-
-      if (q.includes("comida") || q.includes("alimentos")) {
-        return "Las opciones de alimentos están en el Food Court y pasillos exteriores del nivel principal. Busca señalización o pregunta al staff por el punto más cercano.";
-      }
-
-      if (q.includes("cancha")) {
-        return "Cancha está en el nivel inferior, frente al escenario. Para baños, comida o bebidas, busca una salida lateral hacia el perímetro del nivel principal.";
-      }
-
-      if (q.includes("luneta")) {
-        return "Luneta está en el nivel medio inferior, rodeando cancha. Revisa tu sección y valida el acceso exacto con staff.";
-      }
-
-      if (q.includes("balcón") || q.includes("balcon")) {
-        return "Balcón está en el nivel superior. Sigue la señalización hacia escaleras o accesos del nivel alto.";
-      }
-
-      if (q.includes("uber") || q.includes("taxi") || q.includes("salida")) {
-        return "Para Uber o taxi, dirígete hacia la salida exterior señalizada y confirma el punto exacto con el staff.";
-      }
-
-      return "Puedo ayudarte con baños, comida, bebidas, cancha, luneta, balcón, preferente, mercancía oficial, taquilla y salida hacia Uber o taxi. ¿Dónde estás ubicado?";
-    }
-
-    function speak(text) {
-      window.speechSynthesis.cancel();
-
-      const utterance = new SpeechSynthesisUtterance(text);
-      utterance.lang = "es-MX";
-      utterance.rate = 0.95;
-      utterance.pitch = 1.05;
-
-      utterance.onend = () => {
-        speaking = false;
-        if (active) {
-          statusEl.textContent = "Te sigo escuchando...";
-          setTimeout(listen, 700);
-        }
-      };
-
-      window.speechSynthesis.speak(utterance);
-    }
-  </script>
 </body>
 </html>
